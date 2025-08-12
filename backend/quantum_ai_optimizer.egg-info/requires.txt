@@ -1,0 +1,8 @@
+click
+fastapi
+uvicorn
+numpy
+pandas
+scikit-learn
+torch
+pennylane
