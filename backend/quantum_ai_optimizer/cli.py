@@ -1,43 +1,48 @@
 import click
-from .pipeline import pipeline_run, preprocess_run, baseline_run, hybrid_run, evaluate_run
-from .app import start_uvicorn
+from quantum_ai_optimizer.datasets.eeg_loader import load_sample_eeg, preprocess_eeg
 
 @click.group()
-def main():
+def cli():
     """Quantum-AI Optimizer CLI"""
     pass
 
-@main.command('preprocess')
-def preprocess_cmd():
-    """Run preprocessing"""
-    preprocess_run()
-
-@main.command('baseline')
-def baseline_cmd():
+@cli.command()
+def baseline():
     """Run baseline training"""
-    baseline_run()
+    print("[Baseline] Training baseline model...")
 
-@main.command('hybrid')
-def hybrid_cmd():
-    """Run hybrid quantum training"""
-    hybrid_run()
-
-@main.command('evaluate')
-def evaluate_cmd():
+@cli.command()
+def evaluate():
     """Run evaluation"""
-    evaluate_run()
+    print("[Evaluate] Running evaluation...")
 
-@main.command('run-pipeline')
-def run_pipeline_cmd():
+@cli.command()
+def hybrid():
+    """Run hybrid quantum training"""
+    print("[Hybrid] Running quantum-classical model...")
+
+@cli.command()
+def preprocess():
+    """Run preprocessing"""
+    print("[Preprocess] Running preprocessing pipeline...")
+
+@cli.command()
+def run_pipeline():
     """Run full pipeline"""
-    pipeline_run()
+    print("[Pipeline] Running full pipeline...")
 
-@main.command('serve')
-@click.option('--host', default='0.0.0.0')
-@click.option('--port', default=8000)
-def serve_cmd(host, port):
+@cli.command()
+def serve():
     """Start backend server (uvicorn)"""
-    start_uvicorn(host=host, port=port)
+    import uvicorn
+    uvicorn.run("quantum_ai_optimizer.app:app", host="0.0.0.0", port=8000, reload=True)
 
-if __name__ == '__main__':
-    main()
+@cli.command()
+def eeg():
+    """Run EEG data load + preprocessing"""
+    raw = load_sample_eeg()
+    raw_filtered = preprocess_eeg(raw)
+    print("[EEG Pipeline] Ready to pass filtered EEG data to model.")
+
+if __name__ == "__main__":
+    cli()

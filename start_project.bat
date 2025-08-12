@@ -1,26 +1,24 @@
 @echo off
-echo ==========================
+title Quantum-AI Optimizer Launcher
+echo ================================
 echo  Starting Quantum-AI Optimizer
-echo ==========================
+echo ================================
 
-REM Step 1: Start Backend
-echo.
+REM STEP 1: Start Backend
 echo [1/3] Starting Backend...
 start cmd /k "cd backend && venv\Scripts\activate && python -m quantum_ai_optimizer"
 
-REM Give backend a moment to start
+REM Give backend time to start
 timeout /t 5 >nul
 
-REM Step 2: Test Backend
-echo.
-echo [2/3] Testing Backend API...
-curl http://127.0.0.1:8000/ || echo Backend not responding. Check logs.
+REM STEP 2: Start Frontend
+echo [2/3] Starting Frontend...
+start cmd /k "cd frontend && npm run dev"
 
-REM Step 3: Start Frontend
-echo.
-echo [3/3] Starting Frontend...
-start cmd /k "cd frontend && npm install && npm run dev"
+REM STEP 3: Wait and open browser
+echo [3/3] Opening browser...
+timeout /t 5 >nul
+start http://localhost:3001
 
-echo.
-echo ✅ Both backend and frontend have been started in separate windows.
+echo ✅ All services started.
 pause

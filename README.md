@@ -24,4 +24,37 @@ npm run dev -- --host
 docker-compose up --build
 
 ## Deploy to GitHub
-./deploy_to_github.sh git@github.com:YOUR_USERNAME/quantum-ai-optimizer.git
+./deploy_to_github.sh git@github.com:Akindo2579/quantum-ai-optimizer.git
+
+
+# Quantum-AI Optimizer
+
+Full-stack prototype for real-time cognitive health & learning optimization using Quantum AI.
+
+## 🚀 How to Run
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- Git
+
+### Steps
+```bash
+# Clone repo
+git clone https://github.com/YOUR_USERNAME/quantum-ai-optimizer.git
+cd quantum-ai-optimizer
+
+# Backend setup
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
+# Frontend setup
+cd ../frontend
+npm install
+
+# Run everything
+cd ..
+start_project.bat
+

@@ -1,4 +1,11 @@
-backend/venv/ 
-frontend/node_modules/ 
-__pycache__/ 
-dist/ 
+# Python
+backend/venv/
+__pycache__/
+
+# Node
+frontend/node_modules/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
