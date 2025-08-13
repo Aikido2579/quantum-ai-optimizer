@@ -7,8 +7,8 @@ setup(
     include_package_data=True,
     install_requires=['click','fastapi','uvicorn','numpy','pandas','scikit-learn','torch','pennylane'],
     entry_points={
-        'console_scripts': [
-            'quantum-ai=quantum_ai_optimizer.cli:main'
-        ]
-    }
+        "console_scripts": [
+            "quantum-ai=quantum_ai_optimizer.cli:cli"
+        ],
+    },
 )

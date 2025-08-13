@@ -1,47 +1,53 @@
-import uvicorn
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse, JSONResponse
-import json, threading, time
-from .datasets.simulator import Simulator
-from .pipeline import pipeline_run, preprocess_run, baseline_run, hybrid_run, evaluate_run
+from fastapi import FastAPI, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
+import asyncio
 
-app = FastAPI(title='Quantum-AI Optimizer')
+app = FastAPI()
 
-sim = Simulator()
+# Allow frontend to connect
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all for dev
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get('/health')
-def health():
-    return JSONResponse({'status':'ok'})
+connected_clients = []
 
-@app.post('/run/pipeline')
-def run_pipeline():
-    def _run():
-        try:
-            pipeline_run()
-        except Exception as e:
-            print('Pipeline error:', e)
-    t = threading.Thread(target=_run, daemon=True)
-    t.start()
-    return JSONResponse({'status':'started'})
-
-@app.get('/ws/demo')
-def get_demo():
-    html = """<!doctype html><html><body><h1>WebSocket Demo</h1>
-    <script>
-    const ws = new WebSocket('ws://' + location.host + '/ws/stream');
-    ws.onmessage = (ev)=>{ console.log('msg', ev.data); document.body.prepend(document.createElement('pre')).textContent = ev.data; };
-    </script></body></html>"""
-    return HTMLResponse(html)
-
-@app.websocket('/ws/stream')
-async def websocket_stream(ws: WebSocket):
-    await ws.accept()
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for live updates"""
+    await websocket.accept()
+    connected_clients.append(websocket)
     try:
-        for msg in sim.stream_generator():
-            await ws.send_text(json.dumps(msg))
-            time.sleep(0.5)
-    except WebSocketDisconnect:
-        print('Client disconnected')
+        while True:
+            await asyncio.sleep(1)
+    except:
+        connected_clients.remove(websocket)
 
-def start_uvicorn(host='0.0.0.0', port=8000):
-    uvicorn.run("quantum_ai_optimizer.app:app", host=host, port=port, reload=True)
+async def send_ws_message(msg: dict):
+    """Send JSON message to all connected WebSocket clients"""
+    for ws in connected_clients:
+        try:
+            await ws.send_json(msg)
+        except:
+            pass
+
+@app.post("/run/pipeline")
+async def run_pipeline_endpoint():
+    """HTTP endpoint to run pipeline with WS updates"""
+    from quantum_ai_optimizer.pipeline.preprocess import preprocess_run as preprocess_all
+    from quantum_ai_optimizer.pipeline.baseline import baseline_run as train_baseline
+    from quantum_ai_optimizer.pipeline.hybrid import hybrid_run as train_hybrid
+
+    await send_ws_message({"status": "Starting pipeline..."})
+    preprocess_all()
+    await send_ws_message({"status": "Preprocessing done"})
+    train_baseline()
+    await send_ws_message({"status": "Baseline training done"})
+    train_hybrid()
+    await send_ws_message({"status": "Hybrid training done"})
+    await send_ws_message({"status": "✅ Pipeline complete"})
+
+    return {"message": "Pipeline finished"}

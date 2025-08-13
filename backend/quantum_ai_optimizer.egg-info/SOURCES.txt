@@ -9,6 +9,10 @@ quantum_ai_optimizer.egg-info/dependency_links.txt
 quantum_ai_optimizer.egg-info/entry_points.txt
 quantum_ai_optimizer.egg-info/requires.txt
 quantum_ai_optimizer.egg-info/top_level.txt
+quantum_ai_optimizer/datasets/__init__.py
+quantum_ai_optimizer/datasets/eeg_loader.py
+quantum_ai_optimizer/datasets/loaders.py
+quantum_ai_optimizer/datasets/simulator.py
 quantum_ai_optimizer/pipeline/__init__.py
 quantum_ai_optimizer/pipeline/baseline.py
 quantum_ai_optimizer/pipeline/evaluate.py
@@ -16,3 +20,4 @@ quantum_ai_optimizer/pipeline/hybrid.py
 quantum_ai_optimizer/pipeline/preprocess.py
 quantum_ai_optimizer/utils/__init__.py
 quantum_ai_optimizer/utils/helpers.py
+quantum_ai_optimizer/utils/logger.py
